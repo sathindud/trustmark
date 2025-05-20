@@ -17,18 +17,12 @@ interface Review {
 
 function ReviewComponent() {
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchReviews = async () => {
     try {
       const response = await axios.get("/api/home/getreviews");
       setReviews(response.data);
-      setLoading(false);
-    } catch (error) {
-      setError("Failed to fetch data");
-      setLoading(false);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   CheckCircle,
@@ -44,8 +44,8 @@ export default function AddBusiness() {
     phone: "",
   });
 
-  const [file, setFile] = useState<File | null>(null);
-  const [filePreview, setFilePreview] = useState<string | null>(null);
+  // const [file, setFile] = useState<File | null>(null);
+  // const [filePreview, setFilePreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
 
@@ -61,31 +61,31 @@ export default function AddBusiness() {
     setBusiness((prev) => ({ ...prev, [name]: value }));
   };
 
-  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const selectedFile = e.target.files[0];
-      const isImage = selectedFile.type.startsWith("image/");
-      const isValidSize = selectedFile.size <= 5 * 1024 * 1024;
+  // const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files && e.target.files.length > 0) {
+  //     const selectedFile = e.target.files[0];
+  //     const isImage = selectedFile.type.startsWith("image/");
+  //     const isValidSize = selectedFile.size <= 5 * 1024 * 1024;
 
-      if (!isImage) {
-        setError("Only image files are allowed.");
-        setFile(null);
-        setFilePreview(null);
-        return;
-      }
+  //     if (!isImage) {
+  //       setError("Only image files are allowed.");
+  //       setFile(null);
+  //       setFilePreview(null);
+  //       return;
+  //     }
 
-      if (!isValidSize) {
-        setError("File size must be 5MB or less.");
-        setFile(null);
-        setFilePreview(null);
-        return;
-      }
+  //     if (!isValidSize) {
+  //       setError("File size must be 5MB or less.");
+  //       setFile(null);
+  //       setFilePreview(null);
+  //       return;
+  //     }
 
-      setError(null);
-      setFile(selectedFile);
-      setFilePreview(URL.createObjectURL(selectedFile));
-    }
-  };
+  //     setError(null);
+  //     setFile(selectedFile);
+  //     setFilePreview(URL.createObjectURL(selectedFile));
+  //   }
+  // };
 
   const onSubmit = async () => {
     try {
@@ -215,7 +215,7 @@ export default function AddBusiness() {
               className="hidden"
               required
             />
-            <div className="mt-3 text-sm text-gray-700">
+            {/* <div className="mt-3 text-sm text-gray-700">
               <p className="font-medium">{file?.name || "No file selected."}</p>
               {filePreview && (
                 <div className="mt-2">
@@ -226,7 +226,7 @@ export default function AddBusiness() {
                   />
                 </div>
               )}
-            </div>
+            </div> */}
           </div>
 
           <div className="md:col-span-2 flex justify-end gap-3 mt-4">

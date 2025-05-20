@@ -1,6 +1,6 @@
 import axios from "axios";
-import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect, ChangeEvent } from "react";
+import { Link, useParams } from "react-router-dom";
 import { Pencil, Globe, Building, FileText } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -63,16 +63,12 @@ export default function EditBusiness() {
 
   const onSubmit = async () => {
     try {
-      const responese = await axios.post(
-        "/api/updatebusiness ",
-        JSON.stringify(business),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.post("/api/updatebusiness ", JSON.stringify(business), {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       window.location.href = `/businessprofile/${business.id}`;
     } catch (err) {

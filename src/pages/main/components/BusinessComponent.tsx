@@ -11,18 +11,12 @@ function BusinessComponent() {
     total_reviews: number;
   }
   const [business, setBusiness] = useState<Business[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchBusiness = async () => {
     try {
       const response = await axios.get("/api/home/getbusiness");
       setBusiness(response.data);
-      setLoading(false);
-    } catch (error) {
-      setError("Failed to fetch data");
-      setLoading(false);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {

@@ -3,12 +3,9 @@ import empty_profile_photo from "../../assets/review_assets/empty_profile_photo.
 import rate_ster from "../../assets/review_assets/favorite.png";
 import {
   EllipsisVerticalIcon,
-  HandThumbDownIcon,
-  HandThumbUpIcon,
-  MagnifyingGlassIcon,
   CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import ErrorComponent from "./components/ErrorComponent";
 import { useParams } from "react-router-dom";

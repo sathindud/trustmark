@@ -1,10 +1,9 @@
-import DatePicker from "react-datepicker";
 import empty_profile_photo from "../../assets/review_assets/empty_profile_photo.png";
 import rate_star from "../../assets/review_assets/favorite.png";
 import black_star from "../../assets/review_assets/unfavorite.png";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import ErrorComponent from "./components/ErrorComponent";
 import SuccessMessage from "./components/SuccessMessage";
@@ -168,16 +167,12 @@ function WriteReview() {
     finalReview = { ...finalReview, userEmail: user.sub };
 
     try {
-      const response = await axios.post(
-        "/api/evaluvate",
-        JSON.stringify(finalReview),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.post("/api/evaluvate", JSON.stringify(finalReview), {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setShowSuccessMessage(true);
     } catch (error) {
       console.error("Error submitting review:", error);

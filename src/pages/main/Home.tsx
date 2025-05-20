@@ -3,7 +3,6 @@ import CategoryComponent from "./components/CategoryComponent";
 import ReviewComponent from "./components/ReviewComponent";
 import SearchComponent from "./components/SearchComponent";
 import Footer from "./Footer";
-import NavBar from "./Navbar";
 
 function Home() {
   return (

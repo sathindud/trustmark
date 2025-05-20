@@ -8,7 +8,6 @@ interface Category {
 
 function CategoryComponent() {
   const [categories, setCategories] = useState<Category[]>();
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCategories();
@@ -18,9 +17,7 @@ function CategoryComponent() {
     try {
       const response = await axios.get("/api/home/categories");
       setCategories(response.data);
-    } catch (error) {
-      setError("Failed to fetch data");
-    }
+    } catch (error) {}
   };
 
   return (

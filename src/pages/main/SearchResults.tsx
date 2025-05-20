@@ -14,8 +14,6 @@ function SearchResults() {
     total_reviews: number;
   }
   const [business, setBusiness] = useState<Business[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const searchKeyWord = searchParams.get("keyword");
@@ -29,11 +27,7 @@ function SearchResults() {
           },
         });
         setBusiness(response.data);
-        setLoading(false);
-      } catch (error) {
-        setError("Failed to fetch data");
-        setLoading(false);
-      }
+      } catch (error) {}
     }
   };
 

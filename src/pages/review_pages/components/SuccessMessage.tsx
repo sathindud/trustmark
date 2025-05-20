@@ -1,4 +1,3 @@
-import React from "react";
 import successIcon from "../../../assets/review_assets/success.png";
 
 interface SuccessMessageProps {
