@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+    --font-roboto: "Roboto", sans-serif; 
+    --font-Montserrat: "Montserrat", serif;
+  }
+
+
+
+@theme {
+    --color-primary-1: #205781;
+    --color-primary-1-hover: #184568;
+    --color-primary-2: #4F959D;
+    --color-primary-2-hover: #448087;
+    --color-secondary-1: #98D2C0;
+    --color-secondary-2: #F6F8D5;
+  }
+
+  body{
+    margin-top: 64px;
+  }
+  
