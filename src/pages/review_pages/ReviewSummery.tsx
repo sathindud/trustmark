@@ -409,7 +409,7 @@ function ReviewSummery({ bId = -1 }: { bId?: number }) {
             <div className="flex flex-col ml-5">
               <div className="flex flex-row items-center">
                 <p className="text-3xl font-bold">{businessData?.name}</p>
-                {businessData?.verificationStatus === "VERIFIED" ? (
+                {businessData?.verificationStatus === "APPROVED" ? (
                   <CheckSolid className="size-6 ml-2 text-blue-600" />
                 ) : (
                   ""
