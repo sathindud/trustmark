@@ -3,6 +3,7 @@ import { useState, useEffect, ChangeEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Pencil, Globe, Building, FileText } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 interface Business {
   id: number;
@@ -11,10 +12,14 @@ interface Business {
   email: string;
   website: string;
   phone: string;
+  addressL1?: string;
+  addressL2?: string;
+  city?: string;
+  district?: string;
+  postalCode?: string;
 }
 
 export default function EditBusiness() {
-  const { id } = useParams<{ id: string }>();
   const { token } = useAuth();
 
   const [business, setBusiness] = useState<Business>({
@@ -31,28 +36,38 @@ export default function EditBusiness() {
   useEffect(() => {
     const fetchBusiness = async () => {
       try {
-        const response = await axios.get(`/api/getbusiness`, {
-          params: { id: id },
+        if (!token) {
+          setError("No authentication token found.");
+          return;
+        }
+        type JwtPayload = { sub?: string };
+        let userEmail = "";
+        try {
+          const decoded = jwtDecode<JwtPayload>(token);
+          userEmail = decoded.sub ?? "";
+        } catch (decodeErr) {
+          setError("Invalid authentication token.");
+          return;
+        }
+        if (!userEmail) {
+          setError("User email not found in token.");
+          return;
+        }
+        const response = await axios.get("/api/getbusiness", {
+          params: {
+            userEmail,
+          },
         });
-        const data = response.data;
-
-        const reviewSummery: Business = {
-          id: data.id,
-          name: data.name,
-          description: data.description,
-          email: data.email,
-          website: data.website,
-          phone: data.phone,
-        };
-        setBusiness(reviewSummery);
+        setBusiness(response.data);
       } catch (err) {
         console.error(err);
-        setError("Failed to fetch business data.");
+        setError("Failed to fetch business details.");
+      } finally {
       }
     };
 
     fetchBusiness();
-  }, [id]);
+  }, [token]);
 
   const onInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -101,11 +116,6 @@ export default function EditBusiness() {
               icon: <Building className="w-5 h-5 text-[#4F959D]" />,
             },
             {
-              name: "category",
-              label: "Category",
-              icon: <FileText className="w-5 h-5 text-[#4F959D]" />,
-            },
-            {
               name: "email",
               label: "Email",
               icon: <FileText className="w-5 h-5 text-[#4F959D]" />,
@@ -142,6 +152,93 @@ export default function EditBusiness() {
               </div>
             </div>
           ))}
+
+          {/* Location fields */}
+          <div className="relative">
+            <label
+              htmlFor="addressL1"
+              className="block text-[#205781] font-medium mb-1"
+            >
+              Address Line 1
+            </label>
+            <input
+              type="text"
+              id="addressL1"
+              name="addressL1"
+              value={business.addressL1 || ""}
+              onChange={onInputChange}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4F959D] text-gray-800"
+              placeholder="Street address, P.O. box, company name, c/o"
+            />
+          </div>
+          <div className="relative">
+            <label
+              htmlFor="addressL2"
+              className="block text-[#205781] font-medium mb-1"
+            >
+              Address Line 2
+            </label>
+            <input
+              type="text"
+              id="addressL2"
+              name="addressL2"
+              value={business.addressL2 || ""}
+              onChange={onInputChange}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4F959D] text-gray-800"
+              placeholder="Apartment, suite, unit, building, floor, etc."
+            />
+          </div>
+          <div className="relative">
+            <label
+              htmlFor="city"
+              className="block text-[#205781] font-medium mb-1"
+            >
+              City
+            </label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              value={business.city || ""}
+              onChange={onInputChange}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4F959D] text-gray-800"
+              placeholder="City"
+            />
+          </div>
+          <div className="relative">
+            <label
+              htmlFor="district"
+              className="block text-[#205781] font-medium mb-1"
+            >
+              District
+            </label>
+            <input
+              type="text"
+              id="district"
+              name="district"
+              value={business.district || ""}
+              onChange={onInputChange}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4F959D] text-gray-800"
+              placeholder="District"
+            />
+          </div>
+          <div className="relative">
+            <label
+              htmlFor="postalCode"
+              className="block text-[#205781] font-medium mb-1"
+            >
+              Postal Code
+            </label>
+            <input
+              type="text"
+              id="postalCode"
+              name="postalCode"
+              value={business.postalCode || ""}
+              onChange={onInputChange}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#4F959D] text-gray-800"
+              placeholder="Postal Code"
+            />
+          </div>
 
           <div className="md:col-span-2">
             <label

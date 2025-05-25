@@ -4,6 +4,7 @@ import rate_ster from "../../assets/review_assets/favorite.png";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import LazyImage from "../../components/ImageProp";
 
 function SearchResults() {
   interface Business {
@@ -11,7 +12,8 @@ function SearchResults() {
     name: string;
     website: string;
     rating: number;
-    total_reviews: number;
+    photo: string;
+    totalReviews: number;
   }
   const [business, setBusiness] = useState<Business[]>([]);
   const location = useLocation();
@@ -87,7 +89,13 @@ function SearchResults() {
             }}
           >
             <div className="w-full flex flex-row items-center">
-              <img src={emptyImg} className="size-15" alt="" />
+              {biz.photo && biz.photo !== "" ? (
+                <div className="size-30">
+                  <LazyImage imageName={biz.photo} alt={biz.name} />
+                </div>
+              ) : (
+                <img className="size-20" src={emptyImg} alt="" />
+              )}
               <div className="flex flex-col ml-3">
                 <p className="font-bold text-md">{biz.name}</p>
                 <p className="font-light text-sm">{biz.website}</p>
@@ -104,7 +112,7 @@ function SearchResults() {
                     )
                   )}
                   <p className="ml-3  text-sm">
-                    Trust Score {biz.rating} | Reviews: ({biz.total_reviews})
+                    Trust Score {biz.rating} | Reviews: ({biz.totalReviews})
                   </p>
                 </div>
               </div>

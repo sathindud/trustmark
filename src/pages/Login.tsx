@@ -12,6 +12,9 @@ const Login = () => {
     try {
       const res = await loginUser(formData);
       const token = res.data.token;
+      const role = res.data.role;
+      localStorage.setItem("role", role);
+
       login(token);
 
       // Check if the user drafted a review
@@ -21,9 +24,9 @@ const Login = () => {
         const review = JSON.parse(savedReview);
         const businessId = review.businessId;
         window.location.replace(`/evaluate?business_id=${businessId}`);
-      } else {
-        navigate("/dashboard");
-      }
+      } else if (role === "BUSINESS") navigate("/businessprofile");
+      else if (role === "ADMIN") navigate("/admin");
+      else navigate("/dashboard");
     } catch {
       alert("Login failed");
     }
@@ -35,7 +38,10 @@ const Login = () => {
         <AuthForm onSubmit={handleLogin} />
         <p className="text-sm text-center mt-4">
           Don’t have an account?{" "}
-          <a href="/register" className="text-primary-2 hover:underline">
+          <a
+            href="/email-verification"
+            className="text-primary-2 hover:underline"
+          >
             Register
           </a>
         </p>

@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import emptyImg from "../../../assets/review_assets/empty_profile_photo.png";
 import rate_ster from "../../../assets/review_assets/favorite.png";
 import axios from "axios";
+import { loadImage } from "../../../utils/ImageLoader";
+import LazyImage from "../../../components/ImageProp";
 function BusinessComponent() {
   interface Business {
     id: number;
     name: string;
     website: string;
     rating: number;
-    total_reviews: number;
+    photo: string;
+    totalReviews: number;
   }
   const [business, setBusiness] = useState<Business[]>([]);
 
@@ -36,7 +39,13 @@ function BusinessComponent() {
               window.location.href = `/read-review/${item.id}`;
             }}
           >
-            <img className="size-20" src={emptyImg} alt="" />
+            {item.photo && item.photo !== "" ? (
+              <div className="size-30">
+                <LazyImage imageName={item.photo} alt={item.name} />
+              </div>
+            ) : (
+              <img className="size-20" src={emptyImg} alt="" />
+            )}
             <div className="mt-3">
               <p className="font-bold text-lg">{item.name}</p>
               <p className="text-sm">{item.website}</p>
@@ -53,7 +62,7 @@ function BusinessComponent() {
                 ))}
               </div>
               <p className="ml-3 font-light text-sm">
-                {item.rating.toFixed(1)} ({item.total_reviews})
+                {item.rating.toFixed(1)} ({item.totalReviews})
               </p>
             </div>
           </div>

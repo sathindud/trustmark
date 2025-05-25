@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import emptyImg from "../../../assets/review_assets/empty_profile_photo.png";
 import rate_ster from "../../../assets/review_assets/favorite.png";
 import axios from "axios";
+import LazyImage from "../../../components/ImageProp";
 
 interface Review {
   id: number;
@@ -13,6 +14,7 @@ interface Review {
   createdAt: Date;
   businessName: string;
   businessWebsite: string;
+  businessPhoto: string;
 }
 
 function ReviewComponent() {
@@ -39,11 +41,16 @@ function ReviewComponent() {
             className="flex flex-col border border-gray-300 rounded-3xl p-5 w-[295px]"
           >
             <div className="flex flex-row align-items-center">
-              <img
-                src={review.profileImage || emptyImg}
-                className="size-10"
-                alt="Profile"
-              />
+              {review.profileImage && review.profileImage !== "" ? (
+                <div className="size-10">
+                  <LazyImage
+                    imageName={review.profileImage}
+                    alt={review.userName}
+                  />
+                </div>
+              ) : (
+                <img className="size-10" src={emptyImg} alt="" />
+              )}
               <div className="flex flex-col ml-3">
                 <p className="font-bold">{review.userName}</p>
                 <div className="flex flex-row">
@@ -60,16 +67,23 @@ function ReviewComponent() {
             </div>
             <p className="mt-3 font-bold">{review.title}</p>
             <p className="mt-1">{review.content}</p>
-            <hr className="mt-3 border-gray-300" />
-            <div className="flex flex-row align-items-center my-5">
-              <img
-                src={review.profileImage || emptyImg}
-                className="size-10"
-                alt="Business"
-              />
-              <div className="flex flex-col ml-3">
-                <p className="font-bold">{review.businessName}</p>
-                <p className="">{review.businessWebsite}</p>
+            <div className="flex flex-col flex-1 justify-end">
+              <hr className="mt-3 border-gray-300" />
+              <div className="flex flex-row align-items-center my-5">
+                {review.businessPhoto && review.businessPhoto !== "" ? (
+                  <div className="size-10">
+                    <LazyImage
+                      imageName={review.businessPhoto}
+                      alt={review.businessName}
+                    />
+                  </div>
+                ) : (
+                  <img className="size-10" src={emptyImg} alt="" />
+                )}
+                <div className="flex flex-col ml-3">
+                  <p className="font-bold">{review.businessName}</p>
+                  <p className="">{review.businessWebsite}</p>
+                </div>
               </div>
             </div>
           </div>

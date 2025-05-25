@@ -6,6 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   server: {
     proxy: {
+      // '/api': 'http://localhost:8080',
       '/api': 'http://3.133.159.42:80',
     }
   },

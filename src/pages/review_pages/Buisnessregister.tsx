@@ -8,51 +8,92 @@ import {
   UploadCloud,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import CategorySelector, { Category } from "./components/CategorySelectorProps";
 
 interface Business {
-  userId: number;
+  userEmail: string;
   name: string;
   description: string;
-  category: string;
+  category: Category[];
   email: string;
   website: string;
-  verified: number | null;
-  verifiedAt: string;
-  verificationStatus: string;
-  subscriptionTier: string;
-  createdAt: Date | null;
-  updatedAt: Date | null;
   phone: string;
+  photo: string;
+  addressL1: string;
+  addressL2: string;
+  city: string;
+  district: string;
+  postalCode: string;
+}
+
+interface JwtPayload {
+  sub: string; // or 'email' or 'id' depending on your token
+  role?: string;
+  exp?: number;
 }
 
 export default function AddBusiness() {
+  const { token } = useAuth();
   const navigate = useNavigate();
 
+  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<JwtPayload | null>(null);
   const [business, setBusiness] = useState<Business>({
-    userId: 1,
+    userEmail: user?.sub || "",
     name: "",
     description: "",
-    category: "",
+    category: [],
     email: "",
     website: "",
-    verified: null,
-    verifiedAt: "",
-    verificationStatus: "",
-    subscriptionTier: "",
-    createdAt: null,
-    updatedAt: null,
     phone: "",
+    photo: "",
+    addressL1: "",
+    addressL2: "",
+    city: "",
+    district: "",
+    postalCode: "",
   });
-
-  // const [file, setFile] = useState<File | null>(null);
-  // const [filePreview, setFilePreview] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<string>("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [businessCategories, setBusinessCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    const now = new Date();
-    setBusiness((prev) => ({ ...prev, createdAt: now, updatedAt: now }));
+    if (user === null) {
+      fetchUser();
+    }
+    console.log("User ID:", user?.sub);
+  }, [token]);
+
+  const fetchUser = () => {
+    if (token) {
+      const role = localStorage.getItem("role");
+      if (role === "BUSINESS") {
+        navigate("/businessprofile");
+        return;
+      } else {
+        const decoded = jwtDecode<JwtPayload>(token);
+        setUser(decoded);
+        console.log("Decoded user data:", decoded);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("/api/home/categories");
+      console.log("Categories:", response.data);
+      setCategories(response.data);
+    } catch (error) {
+      setError("Failed to fetch data");
+    }
+  };
 
   const onInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -61,45 +102,71 @@ export default function AddBusiness() {
     setBusiness((prev) => ({ ...prev, [name]: value }));
   };
 
-  // const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //   if (e.target.files && e.target.files.length > 0) {
-  //     const selectedFile = e.target.files[0];
-  //     const isImage = selectedFile.type.startsWith("image/");
-  //     const isValidSize = selectedFile.size <= 5 * 1024 * 1024;
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Create preview URL
+      setPreviewUrl(URL.createObjectURL(file));
+      setSelectedFile(file);
+    }
+  };
 
-  //     if (!isImage) {
-  //       setError("Only image files are allowed.");
-  //       setFile(null);
-  //       setFilePreview(null);
-  //       return;
-  //     }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  //     if (!isValidSize) {
-  //       setError("File size must be 5MB or less.");
-  //       setFile(null);
-  //       setFilePreview(null);
-  //       return;
-  //     }
+    const data = business;
 
-  //     setError(null);
-  //     setFile(selectedFile);
-  //     setFilePreview(URL.createObjectURL(selectedFile));
-  //   }
-  // };
+    if (user === null) {
+      console.error("User is not authenticated");
+    } else {
+      data.userEmail = user.sub;
+    }
 
-  const onSubmit = async () => {
+    if (businessCategories.length > 0) {
+      data.category = businessCategories;
+    }
+
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      setUploadStatus("Uploading...");
+      try {
+        const response = await axios.post("api/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        data.photo = response.data; // Assuming the server returns the file URL
+        setUploadStatus(`File uploaded successfully: ${response.data}`);
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        if (axios.isAxiosError(error)) {
+          setUploadStatus(`Error: ${error.response?.data || error.message}`);
+        } else {
+          setUploadStatus("Error uploading file");
+        }
+      }
+    }
+
+    console.log("Form data:", JSON.stringify(data));
     try {
-      await axios.post("/api/savebusiness", JSON.stringify(business), {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const response = await axios.post(
+        "/api/savebusiness",
+        JSON.stringify(data),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data);
       navigate("/");
-    } catch (err) {
-      console.error(err);
-      setError("Something went wrong. Please try again.");
+    } catch (error) {
+      console.error(error);
+      setError("Failed to create business");
     }
   };
 
@@ -107,7 +174,6 @@ export default function AddBusiness() {
     <div className="min-h-screen flex font-[var(--font-roboto)]">
       <div className="hidden lg:flex flex-col justify-center bg-[var(--color-secondary-2)] w-1/2 p-12 relative">
         <div className="absolute inset-0 bg-[var(--color-secondary-1)] clip-triangle opacity-25" />
-
         <div className="flex items-start gap-4 mb-6">
           <CheckCircle className="text-[var(--color-primary-1)] w-6 h-6 mt-1" />
           <div>
@@ -116,7 +182,6 @@ export default function AddBusiness() {
             </h1>
           </div>
         </div>
-
         <div className="flex items-start gap-4 mb-6">
           <ShieldCheck className="text-[var(--color-primary-1)] w-6 h-6 mt-1" />
           <div>
@@ -125,7 +190,6 @@ export default function AddBusiness() {
             </h1>
           </div>
         </div>
-
         <div className="flex items-start gap-4">
           <TrendingUp className="text-[var(--color-primary-1)] w-6 h-6 mt-1" />
           <div>
@@ -153,21 +217,22 @@ export default function AddBusiness() {
         >
           {[
             { name: "name", label: "Business Name", type: "text" },
-            { name: "category", label: "Category", type: "text" },
+            // { name: "category", label: "Category", type: "text" },
             { name: "email", label: "Email", type: "text" },
             { name: "website", label: "Website", type: "text" },
             { name: "phone", label: "Phone Number", type: "text" },
+            { name: "addressL1", label: "Address Line 1", type: "text" },
+            { name: "addressL2", label: "Address Line 2", type: "text" },
+            { name: "city", label: "City", type: "text" },
+            { name: "district", label: "District", type: "text" },
+            { name: "postalCode", label: "Postal Code", type: "text" },
           ].map(({ name, label, type }) => (
             <div key={name}>
-              <label
-                htmlFor={name}
-                className="block text-[var(--color-primary-1)] font-medium mb-1"
-              >
+              <label className="block text-[var(--color-primary-1)] font-medium mb-1">
                 {label}
               </label>
               <input
                 type={type}
-                id={name}
                 name={name}
                 value={business[name as keyof Business] as string}
                 onChange={onInputChange}
@@ -178,14 +243,24 @@ export default function AddBusiness() {
           ))}
 
           <div className="md:col-span-2">
-            <label
-              htmlFor="description"
-              className="block text-[var(--color-primary-1)] font-medium mb-1"
-            >
+            <h2 className="text-[var(--color-primary-1)] font-medium mb-2">
+              Business Categories
+            </h2>
+            {categories.length > 0 ? (
+              <CategorySelector
+                allCategories={categories}
+                onCategoriesChange={setBusinessCategories}
+              />
+            ) : (
+              <p>Loading categories...</p>
+            )}
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-[var(--color-primary-1)] font-medium mb-1">
               Description
             </label>
             <textarea
-              id="description"
               name="description"
               value={business.description}
               onChange={onInputChange}
@@ -195,47 +270,29 @@ export default function AddBusiness() {
             />
           </div>
 
-          <div className="md:col-span-2">
-            <label
-              htmlFor="certificate"
-              className="block text-[var(--color-primary-1)] font-medium mb-1"
-            >
-              Business Verification Certificate
-            </label>
-            <label
-              htmlFor="certificate-upload"
-              className="flex items-center justify-center gap-2 bg-[var(--color-primary-1)] hover:bg-[var(--color-primary-1-hover)] text-white font-medium py-3 px-6 rounded cursor-pointer shadow"
-            >
-              <UploadCloud className="w-5 h-5" /> Upload Image
-            </label>
-            <input
-              type="file"
-              id="certificate-upload"
-              accept="image/*"
-              className="hidden"
-              required
-            />
-            {/* <div className="mt-3 text-sm text-gray-700">
-              <p className="font-medium">{file?.name || "No file selected."}</p>
-              {filePreview && (
-                <div className="mt-2">
-                  <img
-                    src={filePreview}
-                    alt="Preview"
-                    className="h-32 rounded-lg border border-gray-300 object-contain"
-                  />
-                </div>
-              )}
-            </div> */}
+          <div className="p-4 border rounded-md w-full max-w-md mx-auto">
+            <h2 className="text-xl font-bold mb-2">Upload an Image</h2>
+            <input type="file" accept="image/*" onChange={handleFileChange} />
+            {previewUrl && (
+              <div className="mt-4">
+                <p className="mb-2">Preview:</p>
+                <img
+                  src={previewUrl}
+                  alt="Uploaded preview"
+                  className="max-w-full h-auto rounded-md"
+                />
+              </div>
+            )}
+            {uploadStatus && <p>{uploadStatus}</p>}
           </div>
 
           <div className="md:col-span-2 flex justify-end gap-3 mt-4">
             <button
               type="button"
-              onClick={onSubmit}
+              onClick={handleSubmit}
               className="bg-[var(--color-primary-1)] hover:bg-[var(--color-primary-1-hover)] text-white font-medium py-2 px-6 rounded"
             >
-              Save
+              Submit
             </button>
             <Link
               to="/home"

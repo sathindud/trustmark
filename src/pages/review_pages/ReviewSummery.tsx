@@ -5,12 +5,15 @@ import {
   EllipsisVerticalIcon,
   CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
+
+import { CheckBadgeIcon as CheckSolid } from "@heroicons/react/16/solid";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ErrorComponent from "./components/ErrorComponent";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../../context/AuthContext";
+import LazyImage from "../../components/ImageProp";
 
 interface ReviewSummeryProps {
   id: number;
@@ -32,6 +35,14 @@ interface BusinessProps {
   name: string;
   description: string;
   website: string;
+  verificationStatus: string;
+  photo: string;
+  phone: string;
+  addressL1?: string;
+  addressL2?: string;
+  city?: string;
+  district?: string;
+  postalCode?: string;
 }
 
 interface JwtPayload {
@@ -40,7 +51,7 @@ interface JwtPayload {
   exp?: number;
 }
 
-function ReviewSummery() {
+function ReviewSummery({ bId = -1 }: { bId?: number }) {
   const { token } = useAuth();
   const [user, setUser] = useState<JwtPayload | null>(null);
 
@@ -73,6 +84,8 @@ function ReviewSummery() {
       console.log("Received businessId from params:", parseBusinessId);
       if (parseBusinessId > 0) {
         setBusinessId(parseBusinessId);
+      } else if (bId != -1) {
+        setBusinessId(bId);
       } else {
         console.error("Invalid business ID:", paramBusinessId);
         setError("Invalid business ID");
@@ -383,9 +396,25 @@ function ReviewSummery() {
       <div className="w-full p-10 flex flex-col bg-white drop-shadow-lg rounded-3xl">
         <div className="flex lg:flex-row flex-col justify-between">
           <div className="flex flex-row">
-            <img src={empty_profile_photo} className="size-30" alt="" />
+            {businessData?.photo && businessData.photo !== "" ? (
+              <div className="size-30">
+                <LazyImage
+                  imageName={businessData.photo}
+                  alt={businessData.name}
+                />
+              </div>
+            ) : (
+              <img className="size-20" src={empty_profile_photo} alt="" />
+            )}
             <div className="flex flex-col ml-5">
-              <p className="text-3xl font-bold">{businessData?.name}</p>
+              <div className="flex flex-row items-center">
+                <p className="text-3xl font-bold">{businessData?.name}</p>
+                {businessData?.verificationStatus === "VERIFIED" ? (
+                  <CheckSolid className="size-6 ml-2 text-blue-600" />
+                ) : (
+                  ""
+                )}
+              </div>
               <div className="flex flex-row mt-2 items-center">
                 <p className="text-md">Reviews {reviews?.length} |</p>
                 <div className="flex flex-row ml-5">
@@ -404,8 +433,29 @@ function ReviewSummery() {
                 </div>
               </div>
               <div className="mt-10">
-                <p className="font-bold text-lg">Company details: </p>
-                <p className="mt-2 text-md">{businessData?.description}</p>
+                <p className="font-bold text-lg">Company details:</p>
+                {businessData?.description && (
+                  <p className="mt-2 text-md">{businessData.description}</p>
+                )}
+                <div className="mt-3">
+                  {businessData?.addressL1 && (
+                    <p className="text-md">
+                      <span className="font-semibold">Address: </span>
+                      {businessData.addressL1}
+                      {businessData.addressL2 && `, ${businessData.addressL2}`}
+                      {businessData.city && `, ${businessData.city}`}
+                      {businessData.district && `, ${businessData.district}`}
+                      {businessData.postalCode &&
+                        `, ${businessData.postalCode}`}
+                    </p>
+                  )}
+                  {businessData?.phone && (
+                    <p className="text-md mt-1">
+                      <span className="font-semibold">Phone: </span>
+                      {businessData.phone}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -575,11 +625,20 @@ function ReviewSummery() {
               reviews.map((review) => (
                 <div className="w-full mt-10" key={review.id}>
                   <div className="flex flex-row items-center w-full relative">
-                    <img
-                      className="rounded-3xl"
-                      src={empty_profile_photo}
-                      alt=""
-                    />
+                    {review.profileImage && review.profileImage !== "" ? (
+                      <div className="size-10 rounded-3xl">
+                        <LazyImage
+                          imageName={review.profileImage}
+                          alt={review.username}
+                        />
+                      </div>
+                    ) : (
+                      <img
+                        className="size-20"
+                        src={empty_profile_photo}
+                        alt=""
+                      />
+                    )}
                     <div className="ml-3 ">
                       <p className="font-bold text-lg">{review.username}</p>
                       <p className="text-sm text-gray-500">

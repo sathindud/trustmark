@@ -20,7 +20,7 @@ function SearchComponent() {
         <input
           type="text"
           className="flex-grow outline-none px-4 py-2 text-lg w-full sm:w-auto"
-          placeholder="Search for a company..."
+          placeholder="Search companies by name, category, or location"
           aria-label="Search for a company"
           id="search-input"
           onKeyDown={(e) => {

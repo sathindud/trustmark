@@ -10,6 +10,7 @@ import SuccessMessage from "./components/SuccessMessage";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import LazyImage from "../../components/ImageProp";
 
 interface JwtPayload {
   sub: string; // or 'email' or 'id' depending on your token
@@ -21,7 +22,7 @@ interface BusinessProps {
   buisnessId: number;
   businessName: string;
   businessWebsite: string;
-  businessLogo: string | null;
+  photo: string;
 }
 
 interface ReviewProps {
@@ -90,7 +91,7 @@ function WriteReview() {
         buisnessId: response.data.id,
         businessName: response.data.name,
         businessWebsite: response.data.website,
-        businessLogo: null,
+        photo: response.data.photo,
       };
       setBusiness(businessData);
     } catch (error) {
@@ -227,7 +228,16 @@ function WriteReview() {
           <div className="flex flex-col bg-white rounded-lg pt-5 px-10 md:w-[60%]">
             <div className="ml-3 flex flex-row">
               <div>
-                <img src={empty_profile_photo} alt="profile photo" />
+                {business?.photo && business?.photo !== "" ? (
+                  <div className="size-30">
+                    <LazyImage
+                      imageName={business?.photo}
+                      alt={business.businessName}
+                    />
+                  </div>
+                ) : (
+                  <img className="size-20" src={empty_profile_photo} alt="" />
+                )}
               </div>
               <div className="ml-3">
                 <p className="font-bold text-xl">{business?.businessName}</p>

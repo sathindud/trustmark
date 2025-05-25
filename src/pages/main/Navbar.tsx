@@ -25,7 +25,7 @@ function NavBar() {
   };
   useEffect(() => {
     fetchUser();
-    console.log("Fetching user data...");
+    // console.log("Fetching user data...");
   }, [token]);
 
   return (
@@ -60,12 +60,12 @@ function NavBar() {
             >
               Write a Review
             </a>
-            <a
+            {/* <a
               href="/search"
               className="block text-white hover:text-gray-400 p-2 md:inline"
             >
               Categories
-            </a>
+            </a> */}
             {user ? (
               <div className="relative inline-block text-left">
                 <button
@@ -77,7 +77,7 @@ function NavBar() {
                 {menuOpen && (
                   <div className="absolute left-0 mt-2 w-48 bg-[#1C1C1C]  rounded-md shadow-lg z-10">
                     <a
-                      href="/profile"
+                      href="/dashboard"
                       className="block px-4 py-2 text-sm text-white hover:bg-secondary-1 hover:text-black"
                     >
                       Profile
@@ -87,6 +87,7 @@ function NavBar() {
                         logout();
                         setMenuOpen(false);
                         setUser(null);
+                        window.location.href = "/";
                       }}
                       className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-secondary-1 hover:text-black cursor-pointer"
                     >

@@ -12,8 +12,14 @@ const AuthForm = ({ isRegister = false, onSubmit }: AuthFormProps) => {
         password: '',
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
+        const { name, value } = e.target;
+
+        setFormData({
+            ...formData,
+            [name]: name === "email" ? value.toLowerCase() : value
+        });
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -68,6 +74,13 @@ const AuthForm = ({ isRegister = false, onSubmit }: AuthFormProps) => {
             >
                 {isRegister ? 'Register' : 'Login'}
             </button>
+            {isRegister &&         
+            <p className="text-sm text-center mt-7">
+                Email isn't verified?{" "}
+                <a href="/email-verification" className="text-primary-2 hover:underline">
+                    Verify Email
+                </a>
+            </p> }
         </form>
     );
 };

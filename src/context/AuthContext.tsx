@@ -36,6 +36,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = useCallback(() => {
     localStorage.removeItem("jwt");
+    localStorage.removeItem("review");
+
     setToken(null);
   }, []);
 

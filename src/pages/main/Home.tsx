@@ -32,7 +32,7 @@ function Home() {
             <button
               className=" bg-black mt-4 lg:mt-0 text-white rounded-4xl p-3 px-5 font-bold cursor-pointer hover:bg-red-500 hover:text-black transition duration-300 ease-in-out"
               onClick={() => {
-                window.location.href = "/login";
+                window.location.href = "/addbusiness";
               }}
             >
               Get started
