@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import emptyImg from "../../../assets/review_assets/empty_profile_photo.png";
 import rate_ster from "../../../assets/review_assets/favorite.png";
 import axios from "axios";
-import { loadImage } from "../../../utils/ImageLoader";
 import LazyImage from "../../../components/ImageProp";
 function BusinessComponent() {
   interface Business {

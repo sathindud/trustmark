@@ -1,12 +1,7 @@
 import axios from "axios";
 import { useState, ChangeEvent, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  CheckCircle,
-  ShieldCheck,
-  TrendingUp,
-  UploadCloud,
-} from "lucide-react";
+import { CheckCircle, ShieldCheck, TrendingUp } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import CategorySelector, { Category } from "./components/CategorySelectorProps";

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect, ChangeEvent } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Pencil, Globe, Building, FileText } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";

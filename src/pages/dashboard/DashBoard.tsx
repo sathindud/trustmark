@@ -20,7 +20,6 @@ interface UserProfile {
 const Dashboard = () => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -46,7 +45,6 @@ const Dashboard = () => {
     if (file) {
       // Create preview URL
       setPreviewUrl(URL.createObjectURL(file));
-      setSelectedFile(file);
 
       if (user === null) {
         return;

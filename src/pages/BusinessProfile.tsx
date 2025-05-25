@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Globe, CalendarDays, Layers, Tag, Trash2 } from "lucide-react";
+import { Globe, Layers, Tag, Trash2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
-import ReviewSummery from "./review_pages/ReviewSummery";
 import LazyImage from "../components/ImageProp";
 
 interface Business {
