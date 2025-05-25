@@ -4,9 +4,14 @@ import { loadImage } from "../utils/ImageLoader";
 type LazyImageProps = {
   imageName: string;
   alt?: string;
+  className?: string;
 };
 
-export default function LazyImage({ imageName, alt = "" }: LazyImageProps) {
+export default function LazyImage({
+  imageName,
+  alt = "",
+  className,
+}: LazyImageProps) {
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
@@ -50,6 +55,7 @@ export default function LazyImage({ imageName, alt = "" }: LazyImageProps) {
       src={imgSrc ?? ""}
       alt={alt}
       loading="lazy"
+      className={className}
       style={{ width: "100%", height: "auto", opacity: imgSrc ? 1 : 0.5 }}
     />
   );

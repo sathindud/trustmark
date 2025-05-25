@@ -42,10 +42,11 @@ function ReviewComponent() {
           >
             <div className="flex flex-row align-items-center">
               {review.profileImage && review.profileImage !== "" ? (
-                <div className="size-10">
+                <div className="size-10 rounded-full overflow-hidden flex items-center justify-center bg-gray-100">
                   <LazyImage
                     imageName={review.profileImage}
                     alt={review.userName}
+                    className="w-full h-full object-cover"
                   />
                 </div>
               ) : (
